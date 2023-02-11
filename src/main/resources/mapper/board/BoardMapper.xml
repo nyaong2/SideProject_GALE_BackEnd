@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+
+<mapper namespace="com.SideProject.GALE.mapper.board.BoardMapper">
+
+	<select id="GetUserPrivateList" parameterType="Map" resultType="com.SideProject.GALE.model.board.BoardDto">
+		SELECT
+		idx, category, accesstype, writer, regdate, locationname, locationaddress, content, average, likes, price, congestion, accessibility
+		FROM board
+		WHERE category = #{category} AND writer = #{writer} AND accesstype = 0 <!-- <![CDATA[ accesstype = 0]]> -->
+	</select>
+	
+	<select id="GetAllList" parameterType="Map" resultType="com.SideProject.GALE.model.board.BoardDto">
+		SELECT
+		idx, category, accesstype, writer, regdate, locationname, locationaddress, content, average, likes, price, congestion, accessibility
+		FROM board
+		WHERE category = #{category} AND accesstype = 1
+	</select>
+
+	<insert id="Write" parameterType="com.SideProject.GALE.model.board.BoardDto">
+		INSERT INTO board (category, writer, regdate, locationname, locationaddress, content,
+			average, likes, price, congestion, accessibility)
+			VALUE (
+			#{category}, #{writer}, #{regdate}, #{locationname}, #{locationaddress}, #{content},
+			#{average}, #{likes}, #{price}, #{congestion}, #{accessibility} )
+	</insert>
+		
+	<select id="Read" parameterType="int" resultType="com.SideProject.GALE.model.board.BoardDto">
+		SELECT
+		writer, regdate, locationname, locationaddress, content, average, likes, price, congestion, accessibility
+		FROM board
+		WHERE idx = #{idx}
+	</select>
+	
+	<update id="Update" parameterType="com.SideProject.GALE.model.board.BoardDto">
+		UPDATE board
+		SET category = #{category}, locationname = #{locationname}, locationaddress = #{locationaddress},
+					content = #{content}, likes = #{likes}, price = #{price}, congestion = #{congestion}, accessibility = #{accessibility}
+		WHERE idx=#{idx} AND writer=#{writer}
+	</update>
+	
+	<delete id="Delete" parameterType="int">
+ 		DELETE FROM gale.board
+ 		WHERE idx = #{idx}
+ 	</delete>
+</mapper>

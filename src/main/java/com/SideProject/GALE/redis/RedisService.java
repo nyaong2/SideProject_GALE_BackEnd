@@ -1,6 +1,7 @@
 package com.SideProject.GALE.redis;
 
 import java.time.Duration;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.data.redis.core.RedisTemplate;
@@ -18,9 +19,8 @@ public class RedisService {
 
 	public void Save(final String key, final Object value, long expireMilliSeconds)
 	{
-		redisTemplate.opsForValue().set(key, value, Duration.ofMillis(expireMilliSeconds/1000));
-		System.out.println("expire 시간 : " + TimeUtils.CurrentTimeStr(expireMilliSeconds));
-		//redisTemplate.expire(key, TimeUtils.MilliToSecond(expireMilliSeconds), TimeUnit.SECONDS);
+		redisTemplate.opsForValue().set(key, value, Duration.ofMillis(expireMilliSeconds));
+		System.out.println("Redis 대략 expire 시간 : " + TimeUtils.CurrentTimeStr(TimeUtils.GetCurrentMilliSeconds()+ expireMilliSeconds));
 	}
 	
 	public String Get(final String key)

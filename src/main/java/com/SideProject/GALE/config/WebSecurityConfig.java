@@ -41,8 +41,10 @@ public class WebSecurityConfig {
 		
 		http // http ServletRequest를 사용하는 요청에 대한 접근 제한 설정
 			.authorizeRequests()
-			.antMatchers("/auth/**").permitAll()
-			.antMatchers("/board/**").permitAll() // 특정 uri 허용
+			.antMatchers("/auth/**").permitAll() // 특정 uri 허용
+			.antMatchers("/board/**").permitAll() 
+			.antMatchers("/file/**").permitAll()
+
 			.anyRequest().authenticated() //위를 제외한 나머지는 전부 인증이 필요하도록.
 			.and()
 			.addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class); // ID, Password 검사 전에 jwt 필터 먼저 수

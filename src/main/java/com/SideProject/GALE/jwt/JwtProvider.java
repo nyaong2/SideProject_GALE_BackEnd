@@ -21,6 +21,7 @@ import org.springframework.util.StringUtils;
 import com.SideProject.GALE.GaleApplication;
 import com.SideProject.GALE.controller.auth.AuthResCode;
 import com.SideProject.GALE.exception.CustomRuntimeException;
+import com.SideProject.GALE.model.auth.UserDto;
 import com.SideProject.GALE.util.TimeUtils;
 
 import io.jsonwebtoken.Claims;
@@ -42,11 +43,11 @@ public class JwtProvider {
 	@Value("${jwt.secret}")
 	private String JWT_SECRETKEY;
 	
-	@Value("${jwt.AccessToken_MilliSeconds}")
+	@Value("${jwt.accessToken_MilliSeconds}")
 	private long JWT_ACCESS_MILLISECONDS;
 	public long GetAtMilliSeconds() { return JWT_ACCESS_MILLISECONDS;}
 	
-	@Value("${jwt.RefreshToken_MilliSeconds}")
+	@Value("${jwt.refreshToken_MilliSeconds}")
 	private long JWT_REFRESH_MILLISECONDS;
 	public long GetRtMilliSeconds() { return JWT_REFRESH_MILLISECONDS;}
 	
@@ -89,6 +90,8 @@ public class JwtProvider {
     	return new Date();
     }
     
+    
+    
     //Generate
     public Map<String,Object> GenerateAllToken(String email) {
     	Map<String, Object> tokens = new HashMap<String, Object>();
@@ -119,6 +122,8 @@ public class JwtProvider {
     	return tokens;
     }
     
+    
+    
     public String GenerateAccessToken(Map<String,Object> payload, Date date, long expiryMilliSeconds)
     {
     	/*
@@ -141,6 +146,9 @@ public class JwtProvider {
     	}
  
     }
+    
+    
+    
     public String GenerateRefreshToken(Map<String,Object> payload, Date date, long expiryMilliSeconds)
     {
     	/*
@@ -164,6 +172,8 @@ public class JwtProvider {
     	}
     }
     
+    
+    
     public String GetUserEmailToTokenConversion(String token) {
     	return Jwts.parser()
     			.setSigningKey(JWT_SECRETKEY)
@@ -172,6 +182,8 @@ public class JwtProvider {
     			.getSubject();
     }
     
+    
+    
     public Jws<Claims> decryptionToken(String token) throws CustomRuntimeException {
     	try {
     		return Jwts.parser()
@@ -179,24 +191,26 @@ public class JwtProvider {
     				.parseClaimsJws(token);
     		
     	} catch(ExpiredJwtException ex) { // 시간만료
-			throw new CustomRuntimeException(HttpStatus.BAD_REQUEST, AuthResCode.FAIL_INVALIDTOKEN, "요청하신 토큰이 만료되었습니다.");
+			throw new CustomRuntimeException(HttpStatus.UNAUTHORIZED, AuthResCode.FAIL_INVALIDTOKEN, "요청하신 토큰이 만료되었습니다.");
     	} catch(SignatureException | MalformedJwtException | UnsupportedJwtException ex) { 
     		// Signature : 서버 비밀키로 안풀렸을 때 , Malformed = 구조 안맞는 토큰 , Unsupported = 지원하지않는 토큰
-			throw new CustomRuntimeException(HttpStatus.BAD_REQUEST, AuthResCode.FAIL_DIFFERENTTOKEN, "요청하신 토큰이 서버와 맞지 않는 토큰입니다.");
+			throw new CustomRuntimeException(HttpStatus.UNAUTHORIZED, AuthResCode.FAIL_DIFFERENTTOKEN, "요청하신 토큰이 서버와 맞지 않는 토큰입니다.");
     	} catch(Exception e) {
     		return null;
     	}
     }
+    
+    
     
     public boolean validateToken(String token) throws CustomRuntimeException {
     	try {
     		Jws<Claims> claims = Jwts.parser().setSigningKey(JWT_SECRETKEY).parseClaimsJws(token);
     		return !claims.getBody().getExpiration().before(new Date()); //만료가 안됐을 경우 = true
     	} catch(ExpiredJwtException ex) { // 시간만료
-			throw new CustomRuntimeException(HttpStatus.BAD_REQUEST, AuthResCode.FAIL_INVALIDTOKEN,"요청하신 토큰이 만료되었습니다.");
+			throw new CustomRuntimeException(HttpStatus.UNAUTHORIZED, AuthResCode.FAIL_INVALIDTOKEN, "요청하신 토큰이 만료되었습니다.");
     	} catch(SignatureException | MalformedJwtException | UnsupportedJwtException ex) { 
     		// Signature : 서버 비밀키로 안풀렸을 때 , Malformed = 구조 안맞는 토큰 , Unsupported = 지원하지않는 토큰
-			throw new CustomRuntimeException(HttpStatus.BAD_REQUEST, AuthResCode.FAIL_DIFFERENTTOKEN, "요청하신 토큰이 서버와 맞지 않는 토큰입니다.");
+			throw new CustomRuntimeException(HttpStatus.UNAUTHORIZED, AuthResCode.FAIL_DIFFERENTTOKEN, "요청하신 토큰이 서버와 맞지 않는 토큰입니다.");
     	}
     }
     
@@ -204,10 +218,10 @@ public class JwtProvider {
     	try {
     		return Jwts.parser().setSigningKey(JWT_SECRETKEY).parseClaimsJws(token).getBody();
     	} catch(ExpiredJwtException ex) { // 시간만료
-			throw new CustomRuntimeException(HttpStatus.BAD_REQUEST, AuthResCode.FAIL_INVALIDTOKEN,"요청하신 토큰이 만료되었습니다.");
+			throw new CustomRuntimeException(HttpStatus.UNAUTHORIZED, AuthResCode.FAIL_INVALIDTOKEN, "요청하신 토큰이 만료되었습니다.");
     	} catch(SignatureException | MalformedJwtException | UnsupportedJwtException ex) { 
     		// Signature : 서버 비밀키로 안풀렸을 때 , Malformed = 구조 안맞는 토큰 , Unsupported = 지원하지않는 토큰
-			throw new CustomRuntimeException(HttpStatus.BAD_REQUEST, AuthResCode.FAIL_DIFFERENTTOKEN, "요청하신 토큰이 서버와 맞지 않는 토큰입니다.");
+			throw new CustomRuntimeException(HttpStatus.UNAUTHORIZED, AuthResCode.FAIL_DIFFERENTTOKEN, "요청하신 토큰이 서버와 맞지 않는 토큰입니다.");
     	}
     }
     
@@ -216,4 +230,5 @@ public class JwtProvider {
     	UserDetails userDetails = userDetailsService.loadUserByUsername(this.GetUserEmailToTokenConversion(token));    			
     	return new UsernamePasswordAuthenticationToken(token, "", userDetails.getAuthorities());
     }
+    
 }

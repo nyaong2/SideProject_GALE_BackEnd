@@ -12,6 +12,7 @@ public class GaleApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(GaleApplication.class, args);
 		TimeUtils.SystemCurrentTimeSync();
+		TimeUtils.RestartRedis();
 		System.out.println("#Server Start \n");
 	}
 //	

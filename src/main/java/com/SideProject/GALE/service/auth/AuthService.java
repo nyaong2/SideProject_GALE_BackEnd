@@ -45,13 +45,12 @@ public class AuthService {
 	
 	
 	public Map<String,Object> Login(LoginDto loginDto) throws CustomRuntimeException {
-		
 		Map<String,Object> resultData = null;
 		Map<String,Object> allData = null;
 		
 		//Request Data Null Check
 		if(loginDto.NullChecking())
-			throw new CustomRuntimeException(HttpStatus.BAD_REQUEST,AuthResCode.FAIL_NULLDATA,"데이터가 존재하지 않습니다.");			
+			throw new CustomRuntimeException(HttpStatus.BAD_REQUEST,AuthResCode.FAIL_NULLDATA, "잘못된 요청 입니다.");
 
 		// ID Check
 		UserDto accountDTO = accountMapper.findUserByEmail(loginDto.getEmail())
@@ -89,20 +88,20 @@ public class AuthService {
 		boolean result = false;
 		
 		//Request Data Null Check
-		if(tokenDto.NullChecking())
-			throw new CustomRuntimeException(HttpStatus.BAD_REQUEST,AuthResCode.FAIL_NULLDATA,"데이터가 존재하지 않습니다.");			
+		if(tokenDto.getEmail().isEmpty())
+			throw new CustomRuntimeException(HttpStatus.UNAUTHORIZED,AuthResCode.FAIL_NULLDATA, "잘못된 토큰입니다.");
 
 		//Invalid Token Check
-		if(!tokenDto.getToken().toLowerCase().equals("admin")) 	//임시 개발자용. 액세스토큰 백업안해놨을때 admin 입력하면 제거되도록 넣음.
-		{
-			if(!jwtProvider.validateToken(tokenDto.getToken()))
-				throw new CustomRuntimeException(HttpStatus.BAD_REQUEST,AuthResCode.FAIL_INVALIDTOKEN,"만료된 토큰입니다.");			
-		}
+//		if(!tokenDto.getToken().toLowerCase().equals("admin")) 	//임시 개발자용. 액세스토큰 백업안해놨을때 admin 입력하면 제거되도록 넣음.
+//		{
+//			if(!jwtProvider.validateToken(tokenDto.getToken()))
+//				throw new CustomRuntimeException(HttpStatus.BAD_REQUEST,AuthResCode.FAIL_INVALIDTOKEN,"만료된 토큰입니다.");			
+//		}
 		
 		//Redis RefreshToken Exist Check
 		if(redisService.Get(tokenDto.getEmail()).toLowerCase().equals("null"))
 		{
-			throw new CustomRuntimeException(HttpStatus.BAD_REQUEST,AuthResCode.FAIL_NOTFOUND,"잘못된 접근 입니다.");			
+			throw new CustomRuntimeException(HttpStatus.BAD_REQUEST, AuthResCode.FAIL_NOTFOUND, "잘못된 접근 입니다.");			
 		}
 		
 		//Redis RefreshToken Remove
@@ -117,7 +116,7 @@ public class AuthService {
 	{
 		//Request Data Null Check
 		if(userDto.NullChecking())
-			throw new CustomRuntimeException(HttpStatus.BAD_REQUEST,AuthResCode.FAIL_NULLDATA,"데이터가 존재하지 않습니다.");			
+			throw new CustomRuntimeException(HttpStatus.BAD_REQUEST, AuthResCode.FAIL_NULLDATA, "데이터가 존재하지 않습니다.");			
 
 		//Exist Email Check
 		if(this.ExistEmail(userDto.getEmail()))
@@ -203,7 +202,7 @@ public class AuthService {
 	{
 		//Request Data Null Check
 		if(tokenDto.NullChecking())
-			throw new CustomRuntimeException(HttpStatus.BAD_REQUEST,AuthResCode.FAIL_NULLDATA,"데이터가 존재하지 않습니다.");		
+			throw new CustomRuntimeException(HttpStatus.BAD_REQUEST,AuthResCode.FAIL_NULLDATA, "데이터가 존재하지 않습니다.");		
 		
 		String tokens = null;
 		Jws<Claims> claims = null;

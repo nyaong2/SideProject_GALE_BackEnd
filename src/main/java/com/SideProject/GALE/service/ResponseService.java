@@ -44,7 +44,7 @@ public class ResponseService {
 		return (httpHeaders == null) ? ResponseEntity.status(httpStatus).body(obj.toString()) : ResponseEntity.status(httpStatus).headers(httpHeaders).body(obj.toString());
 		//return ResponseEntity.status(httpStatus).headers(httpHeaders).body(obj.toString());
 	}
-	
+		
 	public ResponseEntity CreateListEntity(HttpStatus httpStatus, @Nullable HttpHeaders httpHeaders, String code, String message, JSONArray data) {
 
 		//Map<String, Object> responseData = new HashMap<String,Object>();

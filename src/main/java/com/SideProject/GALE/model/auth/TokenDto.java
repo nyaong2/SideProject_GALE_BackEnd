@@ -9,7 +9,7 @@ import org.springframework.data.redis.core.TimeToLive;
 import org.springframework.data.redis.core.index.Indexed;
 import org.springframework.util.StringUtils;
 
-
+import io.jsonwebtoken.Claims;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,26 +27,23 @@ public class TokenDto {
 	
 	@Id
 	private String email;
+	private String nickname;
 	private String token;
-    @TimeToLive
-	private Long expiration;
 	//public long IssuedTime = 0;
 	//public long ExpirationTime = 0;	
     
 	public boolean NullChecking()
 	{
-		return (!StringUtils.hasText(email) || !StringUtils.hasText(token)) ? true : false;
+		return (!StringUtils.hasText(email) || !StringUtils.hasText(nickname)) || !StringUtils.hasText(token) ? true : false;
 	}
     
-    public TokenDto() {};
-    
-    public TokenDto create (String email, String token, Long expiration) {
-        return TokenDto.builder()
-        		.email(email)
-        		.token(token)
-        		.expiration(expiration/1000)
-        		.build();
-      }
-    
+	public TokenDto(Claims claims, String token) {
+		if(claims != null)
+		{
+			this.setEmail( (claims.get("email") != null) ? claims.get("email").toString() : null );
+			this.setNickname((claims.get("nickname") != null) ?  claims.get("nickname").toString() : null);
+			this.setToken( (!token.isEmpty()) ? token.toString() : null );
+		}
+	}
     
 }

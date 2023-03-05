@@ -27,22 +27,13 @@ public class UserDto implements UserDetails {
 	public String nickname;
 	public int role = 1;
 	
-	
-	public UserDto(Claims claims) {
-		if(claims != null)
-		{
-			this.setEmail( (claims.get("email") != null) ? claims.get("email").toString() : null );
-			this.setRole((claims.get("role") != null) ? 1 : null);
-		}
-	}
-
-	
 	public boolean NullChecking()
 	{
 		return (!StringUtils.hasText(email) || !StringUtils.hasText(password)
 				|| !StringUtils.hasText(confirmpassword) || !StringUtils.hasText(nickname))
 					? true : false;
 	}
+	
 	
 	// 이하 코드는 security 를 위한 용도
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

@@ -36,6 +36,22 @@ public class TimeUtils {
 		}
 	}
 	
+	public static void RestartRedis()
+	{
+		String[] argv = {
+				"sc stop \"Redis\"",
+				"sc start \"Redis\""
+		};
+		
+		for(String argvStr : argv)
+		{
+			try {
+				Process p = Runtime.getRuntime().exec("cmd /c " + argvStr);
+			}catch (Exception e) {
+			};
+		}
+	}
+	
 	public static String CurrentTimeStr(long milliSeconds)
 	{
 		SimpleDateFormat sdf = new SimpleDateFormat("[yyyy년MM월dd일 HH시mm분ss초] ");

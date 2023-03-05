@@ -6,6 +6,7 @@ import java.util.Map;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,14 +37,14 @@ public class AuthController {
 	//12-01 https://onejunu.tistory.com/138
 	private final AuthService authService;
 	private final ResponseService responseService;
-	
 	@PostMapping("/test")
 	public ResponseEntity Test() {
-		
 		//System.out.println("값 : " + date);
 		return responseService.CreateBaseEntity(HttpStatus.OK, null, BoardResCode.SUCCESS, "성공");
 	}
 	
+	
+
 	
 	
 	@PostMapping("/login")
@@ -80,8 +81,15 @@ public class AuthController {
 	
 	//로그아웃
 	@PostMapping("/logout")
-	public ResponseEntity Logout(@RequestBody TokenDto tokenDto) {
+	public ResponseEntity Logout(@AuthenticationPrincipal TokenDto tokenDto) {
 
+		boolean loginCheck = tokenDto.NullChecking();
+
+		//로그인이 되어있지 않으면 로그아웃은 할 수 없음.
+		if(!loginCheck)
+			return responseService.CreateBaseEntity(HttpStatus.UNAUTHORIZED, null, BoardResCode.FAIL_UNAUTHORIZED, "잘못된 접근이거나 로그인 되지 않았습니다.");
+
+		
 		if(GaleApplication.LOGMODE)
 			DebugMsg.Msg("AuthController - Logout", "[ID : " + tokenDto.getEmail() + "]");
 			
@@ -111,6 +119,7 @@ public class AuthController {
 	}	
 	
 
+	
 	@PostMapping("/signup")
 	public ResponseEntity Signup(@RequestBody UserDto userDto, Principal principal)
 	{
@@ -140,6 +149,7 @@ public class AuthController {
 		return result ? responseService.CreateBaseEntity(HttpStatus.OK, null, AuthResCode.SUCCESS, "회원가입 성공")
 					: responseService.CreateBaseEntity(HttpStatus.SERVICE_UNAVAILABLE, null, AuthResCode.FAIL_UNAVAILABLE_SERVER, "Server Error");
 	}
+	
 	
 	
 	//이메일 중복체크
@@ -213,7 +223,7 @@ public class AuthController {
 		if(GaleApplication.LOGMODE)
 			DebugMsg.Msg("AuthController - Token", "[ReqValue : " + tokenDto.getEmail() + "]");
 
-		// Request = 리프레시토큰 받고 검증 후 액세스토큰 다시 발금
+		// Request = 리프레시토큰 받고 검증 후 액세스토큰 다시 발급
 		String tokens = null;
 		
 		try {
@@ -232,7 +242,7 @@ public class AuthController {
 		}
 		if(GaleApplication.LOGMODE)
 			DebugMsg.Msg("AuthController - token", "[Result : " + (StringUtils.hasText(tokens) ? true : false) + "]");
-		
+		JSONObject obj = new JSONObject();
 		
 		return (StringUtils.hasText(tokens)) ? responseService.CreateBaseEntity(HttpStatus.OK, null, AuthResCode.SUCCESS, tokens)
 							: responseService.CreateBaseEntity(HttpStatus.SERVICE_UNAVAILABLE, null,  AuthResCode.FAIL_UNAVAILABLE_SERVER, "Server Error");

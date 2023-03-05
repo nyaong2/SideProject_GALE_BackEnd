@@ -26,7 +26,10 @@ dependencies {
 	// https://mvnrepository.com/artifact/javax.inject/javax.inject
 	implementation group: 'javax.inject', name: 'javax.inject', version: '1'
 	// https://mvnrepository.com/artifact/org.bgee.log4jdbc-log4j2/log4jdbc-log4j2-jdbc4
-	implementation group: 'org.bgee.log4jdbc-log4j2', name: 'log4jdbc-log4j2-jdbc4', version: '1.16'
+	//implementation group: 'org.bgee.log4jdbc-log4j2', name: 'log4jdbc-log4j2-jdbc4', version: '1.16'
+	// https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+	implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.6'
+	
 	// https://mvnrepository.com/artifact/org.projectlombok/lombok
 	compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
 	annotationProcessor 'org.projectlombok:lombok:1.18.24'
@@ -57,14 +60,7 @@ dependencies {
 		// https://mvnrepository.com/artifact/io.lettuce/lettuce-core
 		implementation group: 'io.lettuce', name: 'lettuce-core', version: '6.2.2.RELEASE'
 		
-		//https://mvnrepository.com/artifact/org.springframework.data/spring-data-redis
-		//implementation group: 'org.springframework.data', name: 'spring-data-redis', version: '3.0.0'
-	
-	// https://mvnrepository.com/artifact/it.ozimov/embedded-redis
-	//implementation group: 'it.ozimov', name: 'embedded-redis', version: '0.7.3' {
-	//	exclude group: "org.slf4j", module: "slf4j-simple"
-	//}
-	//implementation ('it.ozimov:embedded-redis:0.7.3') { exclude group: "org.slf4j", module: "slf4j-simple" }
+
 }
 
 processResources {

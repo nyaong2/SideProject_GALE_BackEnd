@@ -20,10 +20,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.SideProject.GALE.model.auth.AuthorityEnum;
+import com.SideProject.GALE.model.auth.TokenDto;
 import com.SideProject.GALE.model.auth.UserDto;
 
 import io.jsonwebtoken.Claims;
@@ -39,6 +42,7 @@ public class JwtFilter extends OncePerRequestFilter {//GenericFilterBean {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException 
 	{
+		System.out.println("아이피 : " + request.getLocalAddr() + " 두번째 : " + request.getRemoteAddr());
 		Authentication authentication = getAuthentication(request);
 		
 		if(authentication != null) {
@@ -68,7 +72,7 @@ public class JwtFilter extends OncePerRequestFilter {//GenericFilterBean {
         	System.out.println(nowTime + "JwtFilter - OPTIONS");
         }
         
-		if(request.getServletPath().startsWith("/auth") || request.getServletPath().startsWith("/board"))
+		if(request.getServletPath().startsWith("/auth") || request.getServletPath().startsWith("/board") || request.getServletPath().startsWith("/file"))
 		{
 			System.out.println(request.getServletPath());
 			filterChain.doFilter(request, response);
@@ -105,7 +109,7 @@ public class JwtFilter extends OncePerRequestFilter {//GenericFilterBean {
         	roles.add(new SimpleGrantedAuthority(role));
         }
         
-        return new UsernamePasswordAuthenticationToken(new UserDto(claims), null, roles);
+        return new UsernamePasswordAuthenticationToken(new TokenDto(claims, token), null, roles);
 		
 	}
 	
@@ -118,5 +122,18 @@ public class JwtFilter extends OncePerRequestFilter {//GenericFilterBean {
         return null;
     }
 	
+    public static String GetRemoteIp()
+    {
+		String ip = null;
+
+		HttpServletRequest req = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();		
+		try {
+			ip = req.getRemoteAddr();
+		} catch (Exception ex){
+			ip = null;
+		}
+		
+		return ip;
+    }
 	
 }
